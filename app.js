@@ -1,22 +1,23 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-const createError = require('http-errors');
-const express = require('express');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-require('dotenv').config();
+const createError = require("http-errors");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
+require("dotenv").config();
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+const indexRouter = require("./routes/index");
+const usersRouter = require("./routes/users");
 
-const session = require('express-session');
-//const flash = require('connect-flash');
-const msal = require('@azure/msal-node');
+const session = require("express-session");
+const flash = require('connect-flash');
+const msal = require("@azure/msal-node");
 
-const authRouter = require('./routes/auth');
-const teamsRouter = require('./routes/teams');
+const authRouter = require("./routes/auth");
+const teamsRouter = require("./routes/v1/teams");
+
 var app = express();
 
 // <MsalInitSnippet>
@@ -28,9 +29,9 @@ app.locals.users = {};
 // MSAL config
 const msalConfig = {
   auth: {
-    clientId: process.env.OAUTH_CLIENT_ID || '',
+    clientId: process.env.OAUTH_CLIENT_ID || "",
     authority: process.env.OAUTH_AUTHORITY,
-    clientSecret: process.env.OAUTH_CLIENT_SECRET
+    clientSecret: process.env.OAUTH_CLIENT_SECRET,
   },
   system: {
     loggerOptions: {
@@ -39,8 +40,8 @@ const msalConfig = {
       },
       piiLoggingEnabled: false,
       logLevel: msal.LogLevel.Verbose,
-    }
-  }
+    },
+  },
 };
 
 // Create msal application object
@@ -50,28 +51,28 @@ app.locals.msalClient = new msal.ConfidentialClientApplication(msalConfig);
 // Session middleware
 // NOTE: Uses default in-memory session store, which is not
 // suitable for production
-app.use(session({
-  secret: 'your_secret_value_here',
-  resave: false,
-  saveUninitialized: false,
-  unset: 'destroy'
-}));
+app.use(
+  session({
+    secret: "your_secret_value_here",
+    resave: false,
+    saveUninitialized: false,
+    unset: "destroy",
+  }),
+);
 
 // Flash middleware
-//app.use(flash());
+app.use(flash());
 
 // Set up local vars for template layout
-app.use(function(req, res, next) {
-  // Read any flashed errors and save
-  // in the response locals
- // res.locals.error = req.flash('error_msg');
-
-  // Check for simple error string and
-  // convert to layout's expected format
-  //var errs = req.flash('error');
-
-  for (var i in errs){
-    res.locals.error.push({message: 'An error occurred', debug: errs[i]});
+app.use(function (req, res, next) {
+  //  // Read any flashed errors and save
+  res.locals.error = req.flash("error_msg");
+  //  // Check for simple error string and
+  //  // convert to layout's expected format
+  var errs = req.flash("error");
+  //
+  for (var i in errs) {
+    res.locals.error.push({ message: "An error occurred", debug: errs[i] });
   }
 
   // Check for an authenticated user and load
@@ -98,31 +99,31 @@ app.use(function(req, res, next) {
 //});
 // </FormatDateSnippet>
 
-app.use(logger('dev'));
+app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, "public")));
 
-app.use('/', indexRouter);
-app.use('/auth', authRouter);
-app.use('/users', usersRouter);
-app.use('/teams', teamsRouter);
+app.use("/", indexRouter);
+app.use("/auth", authRouter);
+app.use("/users", usersRouter);
+app.use("/teams", teamsRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res) {
+app.use(function (err, req, res) {
   // set locals, only providing error in development
   res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+  res.locals.error = req.app.get("env") === "development" ? err : {};
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.render("error");
 });
 
 module.exports = app;

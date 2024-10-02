@@ -2,6 +2,7 @@ const router = require("express-promise-router").default();
 const graph = require("../graph.js");
 
 router.get("/", async function(req, res) {
+  console.log('express server route');
   if (!req.session.userId) {
     // Redirect unauthenticated requests to home page
     res.redirect("/");
@@ -40,7 +41,7 @@ router.get("/", async function(req, res) {
       });
     }
 
-    res.render("teams", params);
+    //res.render("teams", params);
   }
 });
 

@@ -5,7 +5,7 @@ var graph = require("@microsoft/microsoft-graph-client");
 require("isomorphic-fetch");
 
 module.exports = {
-  getUserDetails: async function(msalClient, userId) {
+  getUserDetails: async function (msalClient, userId) {
     const client = getAuthenticatedClient(msalClient, userId);
 
     const user = await client
@@ -16,74 +16,11 @@ module.exports = {
   },
 
   //<GetTeamsChannelsViewSnippet>
-  getTeamsChannelsView: async function(msalClient, userId) {
+  getTeamsChannelsView: async function (msalClient, userId) {
+    console.log("getTeamsChannels has been called: ", msalClient, userId);
     const client = getAuthenticatedClient(msalClient, userId);
-    return client.api("/me/joinedTeams")
-      .select('id,displayName').get();
+    return client.api("/me/joinedTeams").select("id,displayName").get();
   },
-
-  // <GetCalendarViewSnippet>
-  getCalendarView: async function(msalClient, userId, start, end, timeZone) {
-    const client = getAuthenticatedClient(msalClient, userId);
-
-    return (
-      client
-        .api("/me/calendarview")
-        // Add Prefer header to get back times in user's timezone
-        .header("Prefer", `outlook.timezone="${timeZone}"`)
-        // Add the begin and end of the calendar window
-        .query({
-          startDateTime: encodeURIComponent(start),
-          endDateTime: encodeURIComponent(end),
-        })
-        // Get just the properties used by the app
-        .select("subject,organizer,start,end")
-        // Order by start time
-        .orderby("start/dateTime")
-        // Get at most 50 results
-        .top(50)
-        .get()
-    );
-  },
-  // </GetCalendarViewSnippet>
-  // <CreateEventSnippet>
-  createEvent: async function(msalClient, userId, formData, timeZone) {
-    const client = getAuthenticatedClient(msalClient, userId);
-
-    // Build a Graph event
-    const newEvent = {
-      subject: formData.subject,
-      start: {
-        dateTime: formData.start,
-        timeZone: timeZone,
-      },
-      end: {
-        dateTime: formData.end,
-        timeZone: timeZone,
-      },
-      body: {
-        contentType: "text",
-        content: formData.body,
-      },
-    };
-
-    // Add attendees if present
-    if (formData.attendees) {
-      newEvent.attendees = [];
-      formData.attendees.forEach((attendee) => {
-        newEvent.attendees.push({
-          type: "required",
-          emailAddress: {
-            address: attendee,
-          },
-        });
-      });
-    }
-
-    // POST /me/events
-    await client.api("/me/events").post(newEvent);
-  },
-  // </CreateEventSnippet>
 };
 
 function getAuthenticatedClient(msalClient, userId) {

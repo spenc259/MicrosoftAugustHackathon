@@ -12,7 +12,7 @@ const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 
 const session = require('express-session');
-//const flash = require('connect-flash');
+const flash = require('connect-flash');
 const msal = require('@azure/msal-node');
 
 const authRouter = require('./routes/auth');
@@ -46,6 +46,7 @@ const msalConfig = {
 // Create msal application object
 app.locals.msalClient = new msal.ConfidentialClientApplication(msalConfig);
 // </MsalInitSnippet>
+
 // <SessionSnippet>
 // Session middleware
 // NOTE: Uses default in-memory session store, which is not
@@ -58,18 +59,17 @@ app.use(session({
 }));
 
 // Flash middleware
-//app.use(flash());
+app.use(flash());
 
 // Set up local vars for template layout
 app.use(function(req, res, next) {
   // Read any flashed errors and save
   // in the response locals
- // res.locals.error = req.flash('error_msg');
+  res.locals.error = req.flash('error_msg');
 
   // Check for simple error string and
   // convert to layout's expected format
-  //var errs = req.flash('error');
-
+  var errs = req.flash('error');
   for (var i in errs){
     res.locals.error.push({message: 'An error occurred', debug: errs[i]});
   }

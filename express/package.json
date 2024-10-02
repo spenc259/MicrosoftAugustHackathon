@@ -1,34 +1,30 @@
 {
-  "name": "teams-notifications",
-  "version": "1.0.0",
-  "description": "a slack app to get teams notifications",
-  "main": "index.js",
+  "name": "graph-sample",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "lint": "npx eslint . --ext .js",
-    "build": "npx tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "bolt": "node ./slack/app.js"
+    "build": "npx tsc"
   },
-  "author": "Paul Spence & Vijay Sidhu",
-  "license": "ISC",
   "dependencies": {
     "@azure/msal-node": "^2.14.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "~1.4.4",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.1",
     "debug": "^4.3.7",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
     "express-promise-router": "^4.1.1",
     "express-session": "^1.18.0",
     "express-validator": "^7.2.0",
+    "hbs": "^4.2.0",
     "http-errors": "^2.0.0",
     "isomorphic-fetch": "^3.0.0",
     "morgan": "^1.10.0",
-    "@slack/bolt": "^3.21.4",
-    "axios": "^1.7.7",
-    "express": "^4.21.0",
-    "jsonwebtoken": "^9.0.2"
+    "windows-iana": "^5.1.0"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

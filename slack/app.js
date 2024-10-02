@@ -1,4 +1,5 @@
 const { App } = require("@slack/bolt");
+const {registerListeners} = require('./listeners');
 
 // Initializes your app with your bot token and signing secret
 const slackApp = new App({
@@ -8,6 +9,8 @@ const slackApp = new App({
   appToken: process.env.SLACK_APP_TOKEN, // add this
   port: process.env.PORT || 4000,
 });
+
+registerListeners(slackApp);
 
 (async () => {
   // Start your app

@@ -1,7 +1,5 @@
-import { slackApp } from "../app";
 
-// Listen for a slash command invocation
-slackApp.command("/link-teams", async ({ ack, body, client, logger }) => {
+const linkTeamsCallback = async ({ ack, body, client, logger }) => {
   // Acknowledge the command request
   await ack();
 
@@ -71,4 +69,8 @@ slackApp.command("/link-teams", async ({ ack, body, client, logger }) => {
   } catch (error) {
     logger.error(error);
   }
-});
+
+
+}
+
+module.exports = { linkTeamsCallback }

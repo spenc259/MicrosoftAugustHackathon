@@ -1,16 +1,8 @@
-const { App, ExpressReceiver } = require("@slack/bolt");
+const { App } = require("@slack/bolt");
 const {registerListeners} = require('./listeners');
 const { ConfidentialClientApplication } = require('@azure/msal-node');
 const axios = require('axios');
 const express= require('express');
-// const { getAccessToken, handleOAuthCallback, callGraphAPI } = require('./listeners/commands/authorise')
-
-if (!process.env.SLACK_SIGNING_SECRET) {
-  throw new Error('SLACK_SIGNING_SECRET must be set in the environment variables');
-}
-const expressReceiver = new ExpressReceiver({
-  signingSecret: process.env.SLACK_SIGNING_SECRET
-})
 
 if (!process.env.MS_CLIENT_ID || !process.env.MS_CLIENT_SECRET) {
   throw new Error('MS_CLIENT_ID and MS_CLIENT_SECRET must be set in the environment variables');

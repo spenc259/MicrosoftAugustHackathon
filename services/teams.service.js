@@ -4,11 +4,13 @@ const graph = require("../graph");
 const getChannels = async function (req, res) {
   console.log("get channels has been called");
   const params = {
-    channels: []
+    channels: [],
   };
-  
-    // Get the user
-    const user = req.app.locals.users[req.session.userId];
+
+  // Get the user
+  const user = req.app.locals.users[req.session.userId];
+
+  //console.log("get channels User: ", user);
 
   try {
     // get teams channels
@@ -17,8 +19,9 @@ const getChannels = async function (req, res) {
       req.session.userId,
     );
 
-    console.log("getTeams:", channels);
+    //console.log("channels from service:", channels);
     params.teams = channels.value;
+    return channels;
   } catch (err) {
     req.flash("error_msg", {
       message: "Could not fetch channels",

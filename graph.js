@@ -17,7 +17,7 @@ module.exports = {
 
   //<GetTeamsChannelsViewSnippet>
   getTeamsChannelsView: async function (msalClient, userId) {
-    console.log("getTeamsChannels has been called: ", msalClient, userId);
+    console.log("getTeamsChannels has been called: ", userId);
     const client = getAuthenticatedClient(msalClient, userId);
     return client.api("/me/joinedTeams").select("id,displayName").get();
   },

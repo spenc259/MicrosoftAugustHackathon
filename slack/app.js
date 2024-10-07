@@ -1,11 +1,15 @@
-const { App } = require("@slack/bolt");
-const {registerListeners} = require('./listeners');
+require('dotenv').config({ path: __dirname + '/../.env' });
+
+const { App } = require('@slack/bolt');
+const { registerListeners } = require('./listeners');
 const { ConfidentialClientApplication } = require('@azure/msal-node');
 const axios = require('axios');
-const express= require('express');
+const express = require('express');
 
 if (!process.env.MS_CLIENT_ID || !process.env.MS_CLIENT_SECRET) {
-  throw new Error('MS_CLIENT_ID and MS_CLIENT_SECRET must be set in the environment variables');
+  throw new Error(
+    'MS_CLIENT_ID and MS_CLIENT_SECRET must be set in the environment variables'
+  );
 }
 
 const msalConfig = {
@@ -26,16 +30,25 @@ const slackApp = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   socketMode: true, // add this
   appToken: process.env.SLACK_APP_TOKEN, // add this
-  port: process.env.PORT || 4000
+  port: process.env.SLACK_PORT || 4000,
 });
 
 // Command to initiate Microsoft OAuth
 slackApp.command('/auth', async ({ ack, respond }) => {
   await ack();
-  const callbackUrl = 'https://' + process.env.NGROK_DOMAIN + '/auth/callback'
-  const authUrl = `https://login.microsoftonline.com/${process.env.MS_TENANT_ID}/oauth2/v2.0/authorize?client_id=${process.env.MS_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(callbackUrl)}&scope=${encodeURIComponent('User.Read')}`;
+  const callbackUrl =
+    'https://' + process.env.NGROK_DOMAIN + '/auth/callback';
+  const authUrl = `https://login.microsoftonline.com/${
+    process.env.MS_TENANT_ID
+  }/oauth2/v2.0/authorize?client_id=${
+    process.env.MS_CLIENT_ID
+  }&response_type=code&redirect_uri=${encodeURIComponent(
+    callbackUrl
+  )}&scope=${encodeURIComponent('User.Read')}`;
 
-  await respond(`Click here to authorize: <${authUrl}|Authorize with Microsoft>`);
+  await respond(
+    `Click here to authorize: <${authUrl}|Authorize with Microsoft>`
+  );
 });
 // OAuth callback route
 expressApp.get('/auth/callback', async (req, res) => {
@@ -53,7 +66,8 @@ expressApp.get('/auth/callback', async (req, res) => {
 
 // Function to handle OAuth callback and exchange code for token
 const handleOAuthCallback = async (code) => {
-  const callbackUrl = 'https://' + process.env.NGROK_DOMAIN + '/auth/callback'
+  const callbackUrl =
+    'https://' + process.env.NGROK_DOMAIN + '/auth/callback';
   const tokenRequest = {
     code,
     scopes: ['User.Read'],
@@ -61,7 +75,9 @@ const handleOAuthCallback = async (code) => {
   };
 
   try {
-    const tokenResponse = await msalClient.acquireTokenByCode(tokenRequest);
+    const tokenResponse = await msalClient.acquireTokenByCode(
+      tokenRequest
+    );
     return tokenResponse.accessToken;
   } catch (error) {
     console.error('Error during OAuth callback:', error);
@@ -72,11 +88,14 @@ const handleOAuthCallback = async (code) => {
 // Function to call Microsoft Graph API with the acquired token
 const callGraphAPI = async (accessToken) => {
   try {
-    const response = await axios.get('https://graph.microsoft.com/v1.0/me', {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const response = await axios.get(
+      'https://graph.microsoft.com/v1.0/me',
+      {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error calling Graph API:', error);
@@ -93,7 +112,7 @@ registerListeners(slackApp);
   // Start your app
   await slackApp.start(process.env.PORT || 4000);
 
-  console.log("⚡️ Bolt app is running!");
+  console.log('⚡️ Bolt app is running!');
 })();
 
 module.exports = { slackApp };

@@ -6,20 +6,46 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
-require("dotenv").config();
+require("dotenv").config({ path: __dirname + "/./.env" });
 
 const indexRouter = require("./routes/index");
 const usersRouter = require("./routes/users");
 
 const session = require("express-session");
-const flash = require('connect-flash');
+const flash = require("connect-flash");
 const msal = require("@azure/msal-node");
 
-const authRouter = require("./routes/auth");
+const authRouter = require("./routes/v1/auth");
 const teamsRouter = require("./routes/v1/teams");
+const { slackApp } = require("./slack/app");
 
 var app = express();
 
+if (!process.env.SLACK_SIGNING_SECRET) {
+  throw new Error(
+    "SLACK_SIGNING_SECRET must be set in the environment variables",
+  );
+}
+
+//const expressReceiver = new ExpressReceiver({
+//  signingSecret: process.env.SLACK_SIGNING_SECRET
+//})
+
+if (!process.env.MS_CLIENT_ID || !process.env.MS_CLIENT_SECRET) {
+  throw new Error(
+    "MS_CLIENT_ID and MS_CLIENT_SECRET must be set in the environment variables",
+  );
+}
+
+//const msalConfig = {
+//  auth: {
+//    clientId: process.env.MS_CLIENT_ID,
+//    authority: `https://login.microsoftonline.com/${process.env.MS_TENANT_ID}`,
+//    clientSecret: process.env.MS_CLIENT_SECRET,
+//  },
+//};
+
+//const msalClient = new ConfidentialClientApplication(msalConfig);
 // <MsalInitSnippet>
 // In-memory storage of logged-in users
 // For demo purposes only, production apps should store
@@ -29,9 +55,9 @@ app.locals.users = {};
 // MSAL config
 const msalConfig = {
   auth: {
-    clientId: process.env.OAUTH_CLIENT_ID || "",
-    authority: process.env.OAUTH_AUTHORITY,
-    clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    clientId: process.env.MS_CLIENT_ID,
+    authority: `https://login.microsoftonline.com/${process.env.MS_TENANT_ID}`,
+    clientSecret: process.env.MS_CLIENT_SECRET,
   },
   system: {
     loggerOptions: {
@@ -85,20 +111,6 @@ app.use(function (req, res, next) {
 });
 // </SessionSnippet>
 
-// view engine setup
-//app.set('views', path.join(__dirname, 'views'));
-//app.set('view engine', 'hbs');
-
-// <FormatDateSnippet>
-//var hbs = require('hbs');
-//var dateFns = require('date-fns');
-// Helper to format date/time sent by Graph
-//hbs.registerHelper('eventDateTime', function(dateTime) {
-//  const date = dateFns.parseISO(dateTime);
-//  return dateFns.format(date, 'M/d/yy h:mm a');
-//});
-// </FormatDateSnippet>
-
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -125,5 +137,7 @@ app.use(function (err, req, res) {
   res.status(err.status || 500);
   res.render("error");
 });
+
+// start the slack app?
 
 module.exports = app;

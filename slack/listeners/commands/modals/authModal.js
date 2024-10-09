@@ -4,7 +4,7 @@ const authButtonModal = (url) => {
     callback_id: "signin_teams_modal",
     title: {
       type: "plain_text",
-      text: "Just a modal",
+      text: "Sign in to Teams",
     },
     blocks: [
       {

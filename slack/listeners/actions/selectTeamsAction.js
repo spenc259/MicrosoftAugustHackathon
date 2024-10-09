@@ -9,11 +9,11 @@ const displayTeamsInfoCallback = async ({
   context,
 }) => {
   await ack();
-  console.log("context", context);
+  //console.log("context", context);
   try {
     // call the teams endpoint
     const serverResponse = await axios.get("http://localhost:8080/teams");
-    console.log("response from express: ", await serverResponse.data);
+    //console.log("response from express: ", await serverResponse.data);
 
     const channels = await serverResponse.data.value
 

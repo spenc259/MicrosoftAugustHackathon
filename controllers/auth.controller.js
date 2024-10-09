@@ -17,8 +17,8 @@ async function callback(req, res, next) {
 
   const { code, state } = req.query;
 
-  console.log("code", code);
-  console.log("state", state);
+  //console.log("code", code);
+  //console.log("state", state);
 
   const { slackUser, viewId } = JSON.parse(decodeURIComponent(state));
 
@@ -43,8 +43,8 @@ async function callback(req, res, next) {
       timeZone: user.mailboxSettings.timeZone,
     };
 
-    console.log("auth user", user, req.session.userId);
-    console.log("session", req.app.locals, req.session);
+    //console.log("auth user", user, req.session.userId);
+    //console.log("session", req.app.locals, req.session);
 
     res.send(`Hello, ${user.displayName}`);
 

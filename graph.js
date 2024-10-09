@@ -14,13 +14,19 @@ module.exports = {
       .get();
     return user;
   },
-
+ 
   //<GetTeamsChannelsViewSnippet>
   getTeamsChannelsView: async function (msalClient, userId) {
-    console.log("getTeamsChannels has been called: ", userId);
+    //console.log("getTeamsChannels has been called: ", userId);
     const client = getAuthenticatedClient(msalClient, userId);
-    return client.api("/me/joinedTeams").select("id,displayName").get();
+    return client.api("/me/joinedTeams").select("id,displayName,description").get();
   },
+
+  getTeamsSubChannels: async function (msalClient, userId, groupId) {
+    //console.log("Teams sub channel groupId: ", groupId)
+    const client = getAuthenticatedClient(msalClient, userId);
+    return client.api(`/teams/${groupId}/channels`).get();
+  }
 };
 
 function getAuthenticatedClient(msalClient, userId) {

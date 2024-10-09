@@ -1,13 +1,13 @@
 const selectTeamsModal = (channels) => {
-  const options = channels.map(({ id, displayName }, index) => {
+  const options = channels.map(({ id, displayName, description }, index) => {
     return {
       text: {
         type: "mrkdwn",
-        text: "*Microsoft Autumn Hackathon*",
+        text: `*${displayName}*`,
       },
       description: {
         type: "mrkdwn",
-        text: `${displayName}`,
+        text: `${description}`,
       },
       value: `${id}`,
     };
@@ -17,7 +17,7 @@ const selectTeamsModal = (channels) => {
     callback_id: "signin_teams_modal",
     title: {
       type: "plain_text",
-      text: "Team Channels",
+      text: "Teams Selector",
     },
     blocks: [
       {
@@ -25,7 +25,7 @@ const selectTeamsModal = (channels) => {
         block_id: "section-identifier",
         text: {
           type: "mrkdwn",
-          text: "*Please select a channel below to start receiving notifications",
+          text: "*Please select Teams you want to follow",
         },
       },
       {
@@ -34,7 +34,7 @@ const selectTeamsModal = (channels) => {
           {
             type: "checkboxes",
             options: options,
-            action_id: "channelCheckBoxActionId-1",
+            action_id: "display_channels",
           },
         ],
       },

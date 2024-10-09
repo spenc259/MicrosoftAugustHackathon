@@ -13,16 +13,39 @@ async function get(req, res, next) {
   //
   req.session = req.app.locals.session
 
- // console.log("app locals", req.app.locals)
-  //console.log("session", req.session);
+  try {
+    const teams = await teamsService.getTeams(req, res);
+    res.json(teams);
+  } catch (error) {
+    console.error(`Error while getting teams`);
+    next(error);
+  }
+}
+
+async function getChannels(req, res, next) {
+  req.session = req.app.locals.session
+  //console.log("controller: getChannels");
+  //console.log("req.body: ", req.body)
+  const groups = req.body.groups
+  //console.log("groups: ", groups)
+  try {
+    const channels = await teamsService.getChannels(req, res, groups)
+
+    res.json(channels)
+  } catch (error) {
+    next(error);
+  }
+}
+
+
+async function createSubscription(req, res, next) {
+  req.session = req.app.locals.session
 
   try {
-    const channels = await teamsService.getChannels(req, res);
-    //console.log("channels from controller:", channels);
-    res.json(channels);
+    const subscription = await teamsService.createSubscription(req, res, groupId, channelId );
+    res.json(subscription)
   } catch (error) {
-    console.error(`Error while getting channels from teams`);
-    next(error);
+    next(error)
   }
 }
 
@@ -38,4 +61,6 @@ async function post(req, res, next) {
 module.exports = {
   get,
   post,
+  getChannels,
+  createSubscription
 };
